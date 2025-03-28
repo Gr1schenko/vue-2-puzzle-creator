@@ -1,10 +1,5 @@
-# ADMIN APP
-
-## Copy files from container
-```
-sudo sh sh/copy_files_from_container.sh -i [container_id]
-```
-This command will copy next directories and files:
-- dist/
-- node_modules/
-- package-lock.json
+# Реализация сборки пазлов
+Проект выполнила студентка 8 группы Грищенко Ю.Н.
+## Демонстрация работы
+Ниже прикреплена ссылка на видео, где проигрывается успешная сборка пазла.
+https://drive.google.com/drive/folders/1ZtKnEfrZ7CrthKFcjcY3gwdGrs7IhORB?usp=sharing
