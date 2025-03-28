@@ -1,14 +1,14 @@
 <template>
   <ModalComponent>
-    <div>
-      {{ params.title || 'HelpModal' }}
+    <div class="main-text">
+      <h1>{{ params.title || 'HelpModal' }}</h1>
     </div>
-    <button @click="() => $emit('close')">
-      Close
-    </button>
-    <div>
+    <div class="main-text">
       {{ params.message || 'HelpMessage' }}
     </div>
+    <button class="main-button" @click="() => $emit('close')">
+      Close
+    </button>
     <div>
       <button
         v-for="(btn, index) in params.buttons"
@@ -56,6 +56,15 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="less">
+.main-text {
+  font-size: 16px;
+  text-align: center;
+  padding: 20px;
+  font-family: @mainFont
+}
+.main-button {
+  display: flex;
+  margin: 3% auto
+}
 </style>

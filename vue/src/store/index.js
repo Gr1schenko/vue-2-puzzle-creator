@@ -1,11 +1,13 @@
 import modals from './modals'
+import image from './image'
+import puzzle from './puzzle'
 
 export default {
   namespaced: true,
-  state: {},
-  getters: {},
-  mutations: {},
   modules: {
-    modals
+    modals,
+    image,
+    puzzle
   }
 }
+
