@@ -27,7 +27,7 @@ const mutations = {
 }
 
 const actions = {
-  initializePuzzle: ({ commit, state }) => new Promise((resolve, reject) => {
+  initializePuzzle({ commit, state }) {
     const size = image.state.puzzleCount;
     const img = new Image();
     img.src = image.state.imageUrl;
@@ -47,30 +47,24 @@ const actions = {
       const pieces = [];
       for (let y = 0; y < size; y++) {
         for (let x = 0; x < size; x++) {
-          const correctX = x * pieceWidth;
-          const correctY = y * pieceHeight;
           pieces.push({
             src: image.state.imageUrl,
-            x: Math.random() * (containerWidth - pieceWidth),
+            width: pieceWidth,
+            height: pieceHeight,
+            correctX: x * pieceWidth,
+            correctY: y * pieceHeight,
+            x: ( Math.random() < 0.5 ? - pieceWidth / 3: containerWidth - 2 * pieceWidth / 3),
             y: Math.random() * (containerHeight - pieceHeight),
             initialX: x * pieceWidth,
             initialY: y * pieceHeight,
-            correctX: correctX,
-            correctY: correctY,
-            width: pieceWidth,
-            height: pieceHeight,
           })
         }
       }
       commit('setPuzzlePieces', pieces);
       commit('setPuzzleContainerWidth', containerWidth);
       commit('setPuzzleContainerHeight', containerHeight);
-      resolve();
     }
-    img.onerror = (error) => {
-      reject(error);
-    }
-  })
+  }
 }
 
 export default {
