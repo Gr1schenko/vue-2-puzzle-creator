@@ -2,4 +2,4 @@
 Проект выполнила студентка 8 группы Грищенко Ю.Н.
 ## Демонстрация работы
 Ниже прикреплена ссылка на видео, где проигрывается успешная сборка пазла
-https://drive.google.com/file/d/15wo_s0EqD6kgOO3quP5542G40lj9Eu_O/view?usp=sharing
+https://drive.google.com/file/d/1FG4kG__BiAPL-diJOgc7BHUuRj4AoWUH/view?usp=sharing
