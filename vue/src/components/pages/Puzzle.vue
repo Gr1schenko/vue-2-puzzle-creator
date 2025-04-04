@@ -1,19 +1,26 @@
 <template>
   <PageLayout>
-    <div class="main-text">
-      <h1 class="main-head">This is your puzzle</h1>
-      <div class="puzzle-container">
-        <div class="puzzle-box" :style="containerStyle">
-          <div
-            v-for="(piece, index) in pieces"
-            :key="piece.id"
-            class="puzzle-piece"
-            :style="getPieceStyle(piece)"
-            @mousedown="(event) => startDrag(event, index)"
-          >
-            <div :style="getPieceBackgroundStyle(piece)">
-            </div>
-          </div>
+    <h1 class="main-head">This is your puzzle</h1>
+    <div
+      class="puzzle"
+      @mouseleave="() => onMouseLeave()"
+    >
+      <div
+        class="puzzle-container"
+        :style="{
+          width: puzzleContainerWidth + 'px',
+          height: puzzleContainerHeight + 'px'
+        }"
+        @mousemove="(event) => onMouseMove(event)"
+      >
+        <div
+          v-for="(piece, index) in pieces"
+          :key="piece.id"
+          class="puzzle__piece"
+          :style="piece.style"
+          @mousedown="(event) => startDrag(event, index)"
+          @mouseup="() => stopDrag(index)"
+        >
         </div>
       </div>
     </div>
@@ -45,23 +52,28 @@ export default {
       'getPuzzleContainerHeight'
     ]),
     pieces () {
-      return this.getPuzzlePieces;
+      return this.getPuzzlePieces.map(piece => ({
+        style: {
+          left: piece.x + 'px',
+          top: piece.y + 'px',
+          width: piece.width + 'px',
+          height: piece.height + 'px',
+          position: 'absolute',
+          backgroundImage: "url(" + piece.src + ")",
+          backgroundPosition: "-" + piece.initialX + "px -" + piece.initialY + "px",
+          backgroundSize: this.puzzleContainerWidth + "px " + this.puzzleContainerHeight + "px",
+        }
+      }))
     },
-    containerStyle () {
-      return {
-        width: this.getPuzzleContainerWidth + 'px',
-        height: this.getPuzzleContainerHeight + 'px',
-      }
+    puzzleContainerWidth () {
+      return this.getPuzzleContainerWidth
+    },
+    puzzleContainerHeight () {
+      return this.getPuzzleContainerHeight
     }
   },
   mounted () {
     this.initializePuzzle();
-    window.addEventListener('mouseup', this.stopDrag);
-    window.addEventListener('mousemove', this.onMouseMove);
-  },
-  beforeDestroy () {
-    window.removeEventListener('mouseup', this.stopDrag);
-    window.removeEventListener('mousemove', this.onMouseMove);
   },
   methods: {
     ...mapMutations('puzzle', [
@@ -73,87 +85,78 @@ export default {
     ...mapActions('puzzle', [
       'initializePuzzle'
     ]),
-    getPieceStyle (piece) {
-      return {
-        left: piece.x + 'px',
-        top: piece.y + 'px',
-        width: piece.width + 'px',
-        height: piece.height + 'px',
-        position: 'absolute',
-      }
-    },
-    getPieceBackgroundStyle (piece) {
-      return {
-        backgroundImage: 'url(' + piece.src + ')',
-        backgroundPosition: '-' + piece.initialX + 'px -' + piece.initialY + 'px',
-        backgroundSize: this.getPuzzleContainerWidth + 'px ' + this.getPuzzleContainerHeight + 'px',
-        width: '100%',
-        height: '100%',
-      }
-    },
     startDrag (event, index) {
       this.isDragging = true;
       this.dragIndex = index;
       this.offset.x = event.clientX - this.getPuzzlePieces[index].x;
       this.offset.y = event.clientY - this.getPuzzlePieces[index].y;
     },
-    stopDrag () {
-      if (this.isDragging && this.dragIndex !== null) {
-        const piece = this.getPuzzlePieces[this.dragIndex];
-        const cellWidth = piece.width;
-        const cellHeight = piece.height;
-        const cellX = Math.round(piece.x / cellWidth) * cellWidth;
-        const cellY = Math.round(piece.y / cellHeight) * cellHeight;
-        let isBusy = false;
-        for (let i = 0; i < this.getPuzzlePieces.length; i++) {
-          if (
-              i !== this.dragIndex &&
-              this.getPuzzlePieces[i].x === cellX &&
-              this.getPuzzlePieces[i].y === cellY
-          ) {
-            isBusy = true;
-            break;
-          }
-        }
-        if (!isBusy) {
-          piece.x = cellX;
-          piece.y = cellY;
-        }
-        this.setPuzzlePieces([...this.getPuzzlePieces]);
-        this.checkIfPuzzleIsSolved();
+    stopDrag (index) {
+      if (!(this.isDragging && this.dragIndex === index)) {
+        this.isDragging = false;
+        this.dragIndex = null;
+        return;
       }
+      const piece = this.getPuzzlePieces[index];
+      const cellX = Math.round(piece.x / piece.width) * piece.width;
+      const cellY = Math.round(piece.y / piece.height) * piece.height;
+      const inContainer = (
+        cellX >= 0 &&
+        cellY >= 0 &&
+        cellX < this.getPuzzleContainerWidth &&
+        cellY < this.getPuzzleContainerHeight
+      )
+      const distanceX = Math.abs(piece.x - cellX);
+      const distanceY = Math.abs(piece.y - cellY);
+      const distanceXToJoin = piece.width * 0.5;
+      const distanceYToJoin = piece.height * 0.5;
+      const isJoin = (
+        distanceX < distanceXToJoin &&
+        distanceY < distanceYToJoin
+      )
+      const isBusy = this.getPuzzlePieces.some((otherPiece, i) =>
+        i !== this.dragIndex &&
+        this.getPuzzlePieces[i].x === cellX &&
+        this.getPuzzlePieces[i].y === cellY
+      )
+      if (inContainer && !isBusy && isJoin)
+      {
+        piece.x = cellX;
+        piece.y = cellY;
+        this.setPuzzlePieces([...this.getPuzzlePieces]);
+      }
+      this.checkIfPuzzleIsSolved();
       this.isDragging = false;
       this.dragIndex = null;
     },
     onMouseMove (event) {
       if (this.isDragging && this.dragIndex !== null) {
         const piece = this.getPuzzlePieces[this.dragIndex];
-        const newX = event.clientX - this.offset.x;
-        const newY = event.clientY - this.offset.y;
-        piece.x = Math.max(0, Math.min(newX, this.getPuzzleContainerWidth - piece.width));
-        piece.y = Math.max(0, Math.min(newY, this.getPuzzleContainerHeight - piece.height));
+        piece.x = event.clientX - this.offset.x;
+        piece.y = event.clientY - this.offset.y;
         this.setPuzzlePieces([...this.getPuzzlePieces]);
       }
     },
+    onMouseLeave () {
+      this.isDragging = false;
+      this.dragIndex = null;
+    },
     checkIfPuzzleIsSolved () {
       const pieces = this.getPuzzlePieces;
-      if (pieces.length > 0) {
-        let isSolved = true;
-        for (const piece of pieces) {
-          if ((Math.abs(piece.x - piece.correctX) !== 0) || (Math.abs(piece.y - piece.correctY) !== 0)) {
-            isSolved = false;
-            break;
+      const isSolved = pieces.every(piece => {
+        return (
+          Math.abs(piece.x - piece.correctX) === 0 &&
+          Math.abs(piece.y - piece.correctY) === 0
+        )
+      })
+      if (isSolved) {
+        this.openModal({
+          component: HelpModal,
+          params: {
+            title: 'Congratulate',
+            message: 'You completed the puzzle'
           }
-        }
-        if (isSolved) {
-          this.openModal({
-            component: HelpModal,
-            params: {
-              title: 'Congratulate',
-              message: 'You completed the puzzle'
-            }
-          })
-        }
+        })
       }
     }
   }
@@ -161,34 +164,28 @@ export default {
 </script>
 
 <style scoped lang="less">
-.main-text {
-  font-size: 16px;
-  text-align: center;
-  margin-top: 2%;
-  font-family: @mainFont
-}
 .main-head {
   font-size: 32px;
   text-align: center;
-  margin-top: 3%;
-  font-family: @mainFont
+  margin-top: 30px;
+  font-family: @mainFontCourierNew
 }
-.puzzle-container {
+.puzzle {
   display: flex;
   justify-content: center;
-  margin-top: 20px
-}
-.puzzle-box {
-  position: relative;
-  border: @sizeBorderContainer solid @containerBorder;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible
-}
-.puzzle-piece {
-  user-select: none;
-  border: @sizeBorderDefault solid @pieceBorder;
-  overflow: hidden
+  margin-top: 20px;
+  .puzzle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    border: @sizeBorderMainContainer dashed @mainContainerBorder;
+    overflow: visible;
+    .puzzle__piece {
+      user-select: none;
+      border: @sizeBorderDefault solid @pieceBorder;
+      overflow: hidden
+    }
+  }
 }
 </style>

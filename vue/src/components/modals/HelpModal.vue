@@ -6,7 +6,7 @@
     <div class="main-text">
       {{ params.message || 'HelpMessage' }}
     </div>
-    <button class="main-button" @click="() => $emit('close')">
+    <button class="close-button" @click="() => $emit('close')">
       Close
     </button>
     <div>
@@ -61,10 +61,10 @@ export default {
   font-size: 16px;
   text-align: center;
   padding: 20px;
-  font-family: @mainFont
+  font-family: @mainFontCourierNew
 }
-.main-button {
+.close-button {
   display: flex;
-  margin: 3% auto
+  margin: 10px auto
 }
 </style>

@@ -17,35 +17,21 @@ const mutations = {
 }
 
 const actions = {
-  updateImage: ({ commit }, url) => new Promise((resolve, reject) => {
-    try {
-      commit('setImageUrl', url);
-      resolve();
-    } catch (error) {
-      reject(error);
-    }
-  }),
-  updatePuzzleCount: ({ commit }, count) => new Promise((resolve, reject) => {
-    try {
-      commit('setPuzzleCount', count);
-      resolve();
-    } catch (error) {
-      reject(error);
-    }
-  }),
-  loadImage: ({ commit }, file) => new Promise((resolve, reject) => {
+  updateImage({ commit }, url) {
+    commit('setImageUrl', url);
+  },
+  updatePuzzleCount({ commit }, count) {
+    commit('setPuzzleCount', count);
+  },
+  loadImage({ commit }, file) {
     const reader = new FileReader();
     reader.onload = (e) => {
       const imageUrl = e.target.result;
       localStorage.setItem('imageUrl', JSON.stringify(imageUrl));
       commit('setImageUrl', imageUrl);
-      resolve();
-    }
-    reader.onerror = (error) => {
-      reject(error);
     }
     reader.readAsDataURL(file);
-  })
+  }
 }
 
 export default {

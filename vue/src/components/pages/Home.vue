@@ -1,47 +1,59 @@
 <template>
   <PageLayout>
-    <div class="main-text">
-      <h1 class="main-head">Create your own puzzle</h1>
-      <p>On this page you can create a puzzle from any photo from your device</p>
-      <div class="main-container">
-        <div
-          class="upload-box"
-          @dragover.prevent="(event) => event.preventDefault()"
-          @drop.prevent="(event) => onDrop(event)"
-        >
-          <label>
-            <input
-              id="input-image"
-              accept=".jpg,.png,.webp"
-              type="file"
-              name="file"
-              @change="(event) => onFileChange(event)"
-            >
-            <span class="select-input">Select a photo or drag it here</span>
-          </label>
-        </div>
+    <h1 class="main-head">Create your own puzzle</h1>
+    <p class="main-text">On this page you can create a puzzle from any photo from your device</p>
+    <div class="home">
+      <div
+        class="upload-container"
+        @dragover.prevent="(event) => event.preventDefault()"
+        @drop.prevent="(event) => onDrop(event)"
+      >
+        <label>
+          <input
+            id="input-image"
+            accept=".jpg,.png,.webp"
+            type="file"
+            name="file"
+            :style="{display: 'none'}"
+            @change="(event) => onFileChange(event)"
+          >
+          <span class="upload-container__input">Select a photo or drag it here</span>
+        </label>
       </div>
-      <div class="main-container">
-        <div class="number-box">
-          <label>
-            <input
-              type="number"
-              v-model="puzzleSize"
-              class="number-input"
-              placeholder="Enter number of pieces (e.g., 3x3)"
-            >
-          </label>
-        </div>
-        <button class="puzzle-button" @click="() => choosePuzzleSize()">Create</button>
+    </div>
+    <div class="home">
+      <div class="number-container">
+        <label>
+          <input
+            v-model="puzzleSize"
+            type="number"
+            class="number-container__input"
+            placeholder="Enter number of pieces (e.g., 3x3)"
+          >
+        </label>
       </div>
-      <h1 class="main-head" v-if="imageUrl">Preview:</h1>
-      <div class="main-container" v-if="imageUrl">
-        <img
-          class="preview-image"
-          :src="imageUrl"
-          alt="Preview Image"
-        />
-      </div>
+      <button
+        class="create-button"
+        @click="() => choosePuzzleSize()"
+      >
+        Create
+      </button>
+    </div>
+    <h1
+      v-if="imageUrl"
+      class="main-head"
+    >
+      Preview:
+    </h1>
+    <div
+      v-if="imageUrl"
+      class="home"
+    >
+      <img
+        :src="imageUrl"
+        class="preview-image"
+        alt="Preview Image"
+      />
     </div>
   </PageLayout>
 </template>
@@ -121,78 +133,75 @@ export default {
 .main-text {
   font-size: 16px;
   text-align: center;
-  margin-top: 2%;
-  font-family: @mainFont
+  margin-top: 20px;
+  font-family: @mainFontCourierNew
 }
 .main-head {
   font-size: 32px;
   text-align: center;
-  margin-top: 3%;
-  font-family: @mainFont
+  margin-top: 30px;
+  font-family: @mainFontCourierNew
 }
-.main-container {
+.home {
   display: flex;
   justify-content: center;
   width: 100%;
   height: 100%;
-  margin-top: 2%
+  margin-top: 20px;
+  .upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    height: 100px;
+    border: @sizeBorderMainContainer dashed @mainContainerBorder;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: @backgroundMainContainer;
+    .upload-container__input {
+      font-size: 16px;
+      color: gray;
+      width: 100%;
+      text-align: center;
+      cursor: pointer;
+      font-family: @mainFontCourierNew
+    }
+  }
+  .number-container {
+    width: 30%;
+    border: @sizeBorderMainContainer dashed @mainContainerBorder;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: @backgroundMainContainer;
+    .number-container__input {
+      font-size: 16px;
+      color: gray;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      border: none;
+      outline: none;
+      background-color: @backgroundMainContainer;
+      font-family: @mainFontCourierNew
+    }
+  }
+  .preview-image {
+    width: 43%;
+    border: @sizeBorderDefault solid @mainContainerBorder;
+    border-radius: 10px
+  }
 }
-.upload-box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40%;
-  height: 100px;
-  border: 2px dashed @containerBorder;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: @backgroundContainer
-}
-.select-input {
-  font-size: 16px;
-  color: gray;
-  width: 100%;
-  text-align: center;
-  cursor: pointer;
-  font-family: @mainFont
-}
-.upload-box input[id="input-image"] {
-  display: none
-}
-.number-box {
-  width: 30%;
-  border: @sizeBorderContainer dashed @containerBorder;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: @backgroundContainer
-}
-.number-input {
-  font-size: 16px;
-  color: gray;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  border: none;
-  outline: none;
-  background-color: @backgroundContainer;
-  font-family: @mainFont
-}
-.puzzle-button {
+.create-button {
   font-size: 16px;
   color: white;
   width: 10%;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
-  background-color: @puzzleButton;
-  cursor: pointer
-}
-.puzzle-button:hover {
-  background-color: @puzzleButtonHover
-}
-.preview-image {
-  width: 43%;
-  border: 1px solid @containerBorder;
-  border-radius: 5px
+  background-color: @createButton;
+  cursor: pointer;
+  .create-button:hover {
+    background-color: @createButtonHover;
+  }
 }
 </style>
