@@ -17,13 +17,13 @@ const mutations = {
 }
 
 const actions = {
-  updateImage({ commit }, url) {
+  updateImage: ({ commit }, url) => {
     commit('setImageUrl', url);
   },
-  updatePuzzleCount({ commit }, count) {
+  updatePuzzleCount: ({ commit }, count) => {
     commit('setPuzzleCount', count);
   },
-  loadImage({ commit }, file) {
+  loadImage: ({ commit }, file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const imageUrl = e.target.result;

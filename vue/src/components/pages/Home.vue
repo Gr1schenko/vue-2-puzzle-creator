@@ -1,58 +1,58 @@
 <template>
   <PageLayout>
-    <h1 class="main-head">Create your own puzzle</h1>
-    <p class="main-text">On this page you can create a puzzle from any photo from your device</p>
+    <h1 class="home__head">Create your own puzzle</h1>
+    <p class="home__text">On this page you can create a puzzle from any photo from your device</p>
     <div class="home">
       <div
-        class="upload-container"
-        @dragover.prevent="(event) => event.preventDefault()"
-        @drop.prevent="(event) => onDrop(event)"
+          class="home__upload"
+          @dragover.prevent="(event) => event.preventDefault()"
+          @drop.prevent="(event) => onFileSelection(event)"
       >
         <label>
           <input
-            id="input-image"
-            accept=".jpg,.png,.webp"
-            type="file"
-            name="file"
-            :style="{display: 'none'}"
-            @change="(event) => onFileChange(event)"
+              id="input-image"
+              accept=".jpg,.png,.webp"
+              type="file"
+              name="file"
+              :style="{display: 'none'}"
+              @change="(event) => onFileSelection(event)"
           >
-          <span class="upload-container__input">Select a photo or drag it here</span>
+          <span class="home__upload__input">Select a photo or drag it here</span>
         </label>
       </div>
     </div>
     <div class="home">
-      <div class="number-container">
+      <div class="home__number">
         <label>
           <input
-            v-model="puzzleSize"
-            type="number"
-            class="number-container__input"
-            placeholder="Enter number of pieces (e.g., 3x3)"
+              v-model="puzzleSize"
+              type="number"
+              class="home__number__input"
+              placeholder="Enter number of pieces (e.g., 3x3)"
           >
         </label>
       </div>
       <button
-        class="create-button"
-        @click="() => choosePuzzleSize()"
+          class="home__create-button"
+          @click="() => choosePuzzleSize()"
       >
         Create
       </button>
     </div>
     <h1
-      v-if="imageUrl"
-      class="main-head"
+        v-if="getImageUrl"
+        class="home__head"
     >
       Preview:
     </h1>
     <div
-      v-if="imageUrl"
-      class="home"
+        v-if="getImageUrl"
+        class="home"
     >
       <img
-        :src="imageUrl"
-        class="preview-image"
-        alt="Preview Image"
+          :src="getImageUrl"
+          class="home__preview"
+          alt="Preview Image"
       />
     </div>
   </PageLayout>
@@ -74,18 +74,15 @@ export default {
       puzzleSize: null,
     }
   },
-  created () {
-    const savedImageUrl = localStorage.getItem('imageUrl');
-    if (savedImageUrl) {
-      this.updateImage(JSON.parse(savedImageUrl));
-    }
-  },
   computed: {
     ...mapGetters('image', [
       'getImageUrl'
-    ]),
-    imageUrl () {
-      return this.getImageUrl;
+    ])
+  },
+  created () {
+    const savedImageUrl = localStorage.getItem('imageUrl');
+    if (savedImageUrl) {
+      this.updateImage(JSON.parse(savedImageUrl))
     }
   },
   methods: {
@@ -97,24 +94,20 @@ export default {
     ...mapMutations('modals', [
       'openModal'
     ]),
-    onFileChange (event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.loadImage(file);
+    onFileSelection (event) {
+      let file
+      if (event.target.files) {
+        file = event.target.files[0]
+      } else if (event.dataTransfer) {
+        file = event.dataTransfer.files[0]
       }
-    },
-    onDrop (event) {
-      event.preventDefault();
-      const file = event.dataTransfer.files[0];
-      if (file) {
-        this.loadImage(file);
-      }
+      this.loadImage(file)
     },
     choosePuzzleSize () {
       if (this.puzzleSize > 1) {
-        const puzzleSizeNumber = parseInt(this.puzzleSize);
-        this.updatePuzzleCount(puzzleSizeNumber);
-        this.$router.push({ name: ROUTER_NAMES.PUZZLE});
+        const puzzleSizeNumber = parseInt(this.puzzleSize)
+        this.updatePuzzleCount(puzzleSizeNumber)
+        this.$router.push({ name: ROUTER_NAMES.PUZZLE})
       } else {
         this.openModal({
           component: HelpModal,
@@ -130,78 +123,75 @@ export default {
 </script>
 
 <style scoped lang="less">
-.main-text {
-  font-size: 16px;
-  text-align: center;
-  margin-top: 20px;
-  font-family: @mainFontCourierNew
-}
-.main-head {
-  font-size: 32px;
-  text-align: center;
-  margin-top: 30px;
-  font-family: @mainFontCourierNew
-}
 .home {
   display: flex;
   justify-content: center;
-  width: 100%;
-  height: 100%;
   margin-top: 20px;
-  .upload-container {
+  &__head {
+    font-size: 32px;
+    text-align: center;
+    margin-top: 30px;
+    font-family: @ffThree;
+  }
+  &__text {
+    font-size: 16px;
+    text-align: center;
+    margin-top: 20px;
+    font-family: @ffThree;
+  }
+  &__upload {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 40%;
-    height: 100px;
-    border: @sizeBorderMainContainer dashed @mainContainerBorder;
-    padding: 20px;
+    border: 2px dashed @cBorderOne;
+    padding: 5% 3%;
     border-radius: 10px;
-    background-color: @backgroundMainContainer;
-    .upload-container__input {
+    background-color: @cBaseOne;
+    &__input {
       font-size: 16px;
       color: gray;
       width: 100%;
-      text-align: center;
       cursor: pointer;
-      font-family: @mainFontCourierNew
+      font-family: @ffThree;
     }
   }
-  .number-container {
+  &__number {
     width: 30%;
-    border: @sizeBorderMainContainer dashed @mainContainerBorder;
-    padding: 20px;
+    border: 2px dashed @cBorderOne;
+    padding: 2% 3%;
     border-radius: 10px;
-    background-color: @backgroundMainContainer;
-    .number-container__input {
-      font-size: 16px;
-      color: gray;
+    background-color: @cBaseOne;
+    &__input {
       width: 100%;
-      height: 100%;
-      text-align: center;
       border: none;
       outline: none;
-      background-color: @backgroundMainContainer;
-      font-family: @mainFontCourierNew
+      text-align: center;
+      font-size: 16px;
+      color: gray;
+      background-color: @cBaseOne;
+      font-family: @ffThree;
     }
   }
-  .preview-image {
-    width: 43%;
-    border: @sizeBorderDefault solid @mainContainerBorder;
-    border-radius: 10px
+  &__preview {
+    width: 46%;
+    border: 1px solid @cBorderOne;
+    border-radius: 10px;
   }
-}
-.create-button {
-  font-size: 16px;
-  color: white;
-  width: 10%;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  background-color: @createButton;
-  cursor: pointer;
-  .create-button:hover {
-    background-color: @createButtonHover;
+  &__create-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10%;
+    padding: 2% 3%;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #7C7C7C;
+    &:hover {
+      background-color: #707070;
+    }
   }
 }
 </style>

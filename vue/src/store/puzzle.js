@@ -27,7 +27,10 @@ const mutations = {
 }
 
 const actions = {
-  initializePuzzle({ commit, state }) {
+  updatePuzzlePieces: ({ commit }, pieces) => {
+    commit('setPuzzlePieces', pieces);
+  },
+  initializePuzzle: ({ commit, state }) => {
     const size = image.state.puzzleCount;
     const img = new Image();
     img.src = image.state.imageUrl;

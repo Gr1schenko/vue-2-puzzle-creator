@@ -1,15 +1,15 @@
 <template>
   <PageLayout>
-    <h1 class="main-head">This is your puzzle</h1>
+    <h1 class="puzzle__head">This is your puzzle</h1>
     <div
       class="puzzle"
       @mouseleave="() => onMouseLeave()"
     >
       <div
-        class="puzzle-container"
+        class="puzzle__assembly"
         :style="{
-          width: puzzleContainerWidth + 'px',
-          height: puzzleContainerHeight + 'px'
+          width: getPuzzleContainerWidth + 'px',
+          height: getPuzzleContainerHeight + 'px'
         }"
         @mousemove="(event) => onMouseMove(event)"
       >
@@ -61,55 +61,47 @@ export default {
           position: 'absolute',
           backgroundImage: "url(" + piece.src + ")",
           backgroundPosition: "-" + piece.initialX + "px -" + piece.initialY + "px",
-          backgroundSize: this.puzzleContainerWidth + "px " + this.puzzleContainerHeight + "px",
+          backgroundSize: this.getPuzzleContainerWidth + "px " + this.getPuzzleContainerHeight + "px",
         }
       }))
-    },
-    puzzleContainerWidth () {
-      return this.getPuzzleContainerWidth
-    },
-    puzzleContainerHeight () {
-      return this.getPuzzleContainerHeight
     }
   },
   mounted () {
     this.initializePuzzle();
   },
   methods: {
-    ...mapMutations('puzzle', [
-      'setPuzzlePieces'
-    ]),
     ...mapMutations('modals', [
       'openModal'
     ]),
     ...mapActions('puzzle', [
+      'updatePuzzlePieces',
       'initializePuzzle'
     ]),
     startDrag (event, index) {
-      this.isDragging = true;
-      this.dragIndex = index;
-      this.offset.x = event.clientX - this.getPuzzlePieces[index].x;
-      this.offset.y = event.clientY - this.getPuzzlePieces[index].y;
+      this.isDragging = true
+      this.dragIndex = index
+      this.offset.x = event.clientX - this.getPuzzlePieces[index].x
+      this.offset.y = event.clientY - this.getPuzzlePieces[index].y
     },
     stopDrag (index) {
       if (!(this.isDragging && this.dragIndex === index)) {
-        this.isDragging = false;
-        this.dragIndex = null;
-        return;
+        this.isDragging = false
+        this.dragIndex = null
+        return
       }
       const piece = this.getPuzzlePieces[index];
-      const cellX = Math.round(piece.x / piece.width) * piece.width;
-      const cellY = Math.round(piece.y / piece.height) * piece.height;
+      const cellX = Math.round(piece.x / piece.width) * piece.width
+      const cellY = Math.round(piece.y / piece.height) * piece.height
       const inContainer = (
         cellX >= 0 &&
         cellY >= 0 &&
         cellX < this.getPuzzleContainerWidth &&
         cellY < this.getPuzzleContainerHeight
       )
-      const distanceX = Math.abs(piece.x - cellX);
-      const distanceY = Math.abs(piece.y - cellY);
-      const distanceXToJoin = piece.width * 0.5;
-      const distanceYToJoin = piece.height * 0.5;
+      const distanceX = Math.abs(piece.x - cellX)
+      const distanceY = Math.abs(piece.y - cellY)
+      const distanceXToJoin = piece.width * 0.5
+      const distanceYToJoin = piece.height * 0.5
       const isJoin = (
         distanceX < distanceXToJoin &&
         distanceY < distanceYToJoin
@@ -121,25 +113,25 @@ export default {
       )
       if (inContainer && !isBusy && isJoin)
       {
-        piece.x = cellX;
-        piece.y = cellY;
-        this.setPuzzlePieces([...this.getPuzzlePieces]);
+        piece.x = cellX
+        piece.y = cellY
+        this.updatePuzzlePieces(this.getPuzzlePieces)
       }
-      this.checkIfPuzzleIsSolved();
-      this.isDragging = false;
-      this.dragIndex = null;
+      this.checkIfPuzzleIsSolved()
+      this.isDragging = false
+      this.dragIndex = null
     },
     onMouseMove (event) {
       if (this.isDragging && this.dragIndex !== null) {
-        const piece = this.getPuzzlePieces[this.dragIndex];
-        piece.x = event.clientX - this.offset.x;
-        piece.y = event.clientY - this.offset.y;
-        this.setPuzzlePieces([...this.getPuzzlePieces]);
+        const piece = this.getPuzzlePieces[this.dragIndex]
+        piece.x = event.clientX - this.offset.x
+        piece.y = event.clientY - this.offset.y
+        this.updatePuzzlePieces(this.getPuzzlePieces)
       }
     },
     onMouseLeave () {
-      this.isDragging = false;
-      this.dragIndex = null;
+      this.isDragging = false
+      this.dragIndex = null
     },
     checkIfPuzzleIsSolved () {
       const pieces = this.getPuzzlePieces;
@@ -164,28 +156,28 @@ export default {
 </script>
 
 <style scoped lang="less">
-.main-head {
-  font-size: 32px;
-  text-align: center;
-  margin-top: 30px;
-  font-family: @mainFontCourierNew
-}
 .puzzle {
   display: flex;
   justify-content: center;
   margin-top: 20px;
-  .puzzle-container {
+  &__head {
+    font-size: 32px;
+    text-align: center;
+    margin-top: 30px;
+    font-family: @ffThree
+  }
+  &__assembly {
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
-    border: @sizeBorderMainContainer dashed @mainContainerBorder;
+    border: 2px dashed @cBorderOne;
     overflow: visible;
-    .puzzle__piece {
-      user-select: none;
-      border: @sizeBorderDefault solid @pieceBorder;
-      overflow: hidden
-    }
+  }
+  &__piece {
+    user-select: none;
+    border: 1px solid @cBorderOne;
+    overflow: hidden
   }
 }
 </style>

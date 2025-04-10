@@ -1,12 +1,12 @@
 <template>
   <ModalComponent>
-    <div class="main-text">
+    <div class="modal__text">
       <h1>{{ params.title || 'HelpModal' }}</h1>
     </div>
-    <div class="main-text">
+    <div class="modal__text">
       {{ params.message || 'HelpMessage' }}
     </div>
-    <button class="close-button" @click="() => $emit('close')">
+    <button class="modal__close-button" @click="() => $emit('close')">
       Close
     </button>
     <div>
@@ -57,14 +57,16 @@ export default {
 </script>
 
 <style scoped lang="less">
-.main-text {
-  font-size: 16px;
-  text-align: center;
-  padding: 20px;
-  font-family: @mainFontCourierNew
-}
-.close-button {
-  display: flex;
-  margin: 10px auto
+.modal {
+  &__text {
+    font-size: 16px;
+    text-align: center;
+    padding: 20px;
+    font-family: @ffThree
+  }
+  &__close-button {
+    display: flex;
+    margin: 10px auto
+  }
 }
 </style>
