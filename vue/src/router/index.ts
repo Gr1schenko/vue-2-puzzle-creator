@@ -1,15 +1,21 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomePage from '../components/pages/Home.vue'
-import { RouteNames } from './routes'
+import Home from '../components/pages/Home.vue'
+import Puzzle from '../components/pages/Puzzle.vue'
+import { ROUTER_NAMES } from './routes'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: RouteNames.HOME,
-    component: HomePage
+    name: ROUTER_NAMES.HOME,
+    component: Home
+  },
+  {
+    path: '/puzzle',
+    name: ROUTER_NAMES.PUZZLE,
+    component: Puzzle
   }
 ]
 
